@@ -7,23 +7,27 @@ function DynamicForm() {
   const [formData, setFormData] = useState({});
   const [errors, setErrors] = useState({ Name: "", phoneNumber: "" });
   const [toggle, setToggle] = useState(false);
-  const [selectedValue, setSelectedValue] = useState("option1");
   const [ischeckboxSelected, setIsCheckboxSelected] = useState("");
   const [options, setOptions] = useState([]);
   const [newOption, setNewOption] = useState("");
   const [showAddOptionButton, setShowAddOptionButton] = useState(true);
+  const [selectedRadio, setSelectedRadio] = useState("");
   const inputRef = useRef();
   const selectRef = useRef();
 
-  const loadFormConfig = () => {
+  const loadFormConfig = (e) => {
+    e.preventDefault();
     const storedConfig = localStorage.getItem("formConfig");
     if (storedConfig) {
       setFormValues(JSON.parse(storedConfig));
     }
+    alert("Form Configuration loaded");
   };
 
-  const saveFormConfig = () => {
+  const saveFormConfig = (e) => {
+    e.preventDefault();
     localStorage.setItem("formConfig", JSON.stringify(formValues));
+    alert("Form Configuration saved");
   };
 
   const addOption = (e) => {
@@ -42,7 +46,14 @@ function DynamicForm() {
 
   const handleChange = (e, index, value) => {
     const values = [...formValues];
-    setSelectedValue(value);
+    values[index].value = e.target.value;
+    setFormValues(values);
+    setFormData({ ...formData, [values[index].label]: e.target.value });
+  };
+
+  const handleRadioChange = (e, index, value) => {
+    const values = [...formValues];
+    setSelectedRadio(e.target.value);
     values[index].value = e.target.value;
     setFormValues(values);
     setFormData({ ...formData, [values[index].label]: e.target.value });
@@ -114,6 +125,7 @@ function DynamicForm() {
     setIsCheckboxSelected(e.target.checked);
     values[index].value = e.target.checked;
     setFormValues(values);
+    setFormData({ ...formData, [values[index].label]: e.target.value });
   };
 
   return (
@@ -255,9 +267,9 @@ function DynamicForm() {
                   <input
                     type="radio"
                     value="Female"
-                    checked={selectedValue === "Female"}
+                    checked={selectedRadio === "Female"}
                     onChange={(e) => {
-                      handleChange(e, index, "Female");
+                      handleRadioChange(e, index, "Female");
                     }}
                   />
                   Female
@@ -266,7 +278,7 @@ function DynamicForm() {
                   <input
                     type="radio"
                     value="Male"
-                    checked={selectedValue === "Male"}
+                    checked={selectedRadio === "Male"}
                     onChange={(e) => {
                       handleChange(e, index, "Male");
                     }}
